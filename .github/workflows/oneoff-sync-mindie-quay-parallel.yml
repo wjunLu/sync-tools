@@ -25,9 +25,9 @@ jobs:
         run: |
           set -euo pipefail
           SRC="swr.cn-south-1.myhuaweicloud.com/ascendhub/mindie"
-          GROUPS="${{ inputs.group_count }}"
-          GROUPS="${GROUPS:-8}"
-          [ "$GROUPS" -gt 0 ] 2>/dev/null || GROUPS=8
+          GCOUNT="${{ inputs.group_count }}"
+          GCOUNT="${GCOUNT:-8}"
+          [ "$GCOUNT" -gt 0 ] 2>/dev/null || GCOUNT=8
 
           TAGS=$(skopeo list-tags --no-creds docker://"$SRC" | jq -r '.Tags[]' | sort -u)
           if [ -z "$TAGS" ]; then
@@ -35,9 +35,9 @@ jobs:
             exit 1
           fi
           TOTAL=$(echo "$TAGS" | wc -l)
-          echo "Found $TOTAL tags, splitting into $GROUPS groups"
+          echo "Found $TOTAL tags, splitting into $GCOUNT groups"
 
-          matrix=$(echo "$TAGS" | jq -R -s -c --argjson g "$GROUPS" '
+          matrix=$(echo "$TAGS" | jq -R -s -c --argjson g "$GCOUNT" '
             split("\n") | map(select(length > 0)) as $tags
             | ($tags | length) as $total
             | (($total + $g - 1) / $g | floor) as $chunk
