@@ -26,6 +26,8 @@ jobs:
           set -euo pipefail
           SRC="swr.cn-south-1.myhuaweicloud.com/ascendhub/mindie"
           GROUPS="${{ inputs.group_count }}"
+          GROUPS="${GROUPS:-8}"
+          [ "$GROUPS" -gt 0 ] 2>/dev/null || GROUPS=8
 
           TAGS=$(skopeo list-tags --no-creds docker://"$SRC" | jq -r '.Tags[]' | sort -u)
           if [ -z "$TAGS" ]; then
