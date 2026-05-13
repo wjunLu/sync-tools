@@ -38,5 +38,27 @@
   { "src": "swr.cn-south-1.myhuaweicloud.com/ascendhub/mindie",      "dest": "quay.io/ascend/mindie" },
 
   { "src": "docker.io/lmsysorg/sglang",  "dest": "swr.cn-southwest-2.myhuaweicloud.com/base_image/dockerhub/lmsysorg/sglang", "tag_filter": "cann" },
-  { "src": "docker.io/lmsysorg/sglang",  "dest": "quay.io/ascend/sglang", "tag_filter": "cann" }
+  { "src": "docker.io/lmsysorg/sglang",  "dest": "quay.io/ascend/sglang", "tag_filter": "cann" },
+
+  { "src": "quay.io/ascend/ms-swift",  "dest": "docker.io/ascendai/ms-swift" },
+
+  { "src": "quay.io/ascend/slime-ascend",  "dest": "docker.io/ascendai/slime-ascend" },
+
+  { "src": "swr.cn-south-1.myhuaweicloud.com/ascendhub/ragsdk",  "dest": "docker.io/ascendai/ragsdk" },
+  { "src": "swr.cn-south-1.myhuaweicloud.com/ascendhub/ragsdk",  "dest": "quay.io/ascend/ragsdk" },
+
+  { "src": "swr.cn-south-1.myhuaweicloud.com/ascendhub/indexsdk",  "dest": "docker.io/ascendai/indexsdk" },
+  { "src": "swr.cn-south-1.myhuaweicloud.com/ascendhub/indexsdk",  "dest": "quay.io/ascend/indexsdk" },
+
+  { "src": "swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk",  "dest": "docker.io/ascendai/multimodalsdk" },
+  { "src": "swr.cn-south-1.myhuaweicloud.com/ascendhub/multimodalsdk",  "dest": "quay.io/ascend/multimodalsdk" },
+
+  { "src": "swr.cn-south-1.myhuaweicloud.com/ascendhub/mindspeed-llm",  "dest": "docker.io/ascendai/mindspeed-llm" },
+  { "src": "swr.cn-south-1.myhuaweicloud.com/ascendhub/mindspeed-llm",  "dest": "quay.io/ascend/mindspeed-llm" },
+  
+  { "src": "swr.cn-south-1.myhuaweicloud.com/ascendhub/mindspeed-mm",  "dest": "docker.io/ascendai/mindspeed-mm" },
+  { "src": "swr.cn-south-1.myhuaweicloud.com/ascendhub/mindspeed-mm",  "dest": "quay.io/ascend/mindspeed-mm" },
+  
+  { "src": "swr.cn-south-1.myhuaweicloud.com/ascendhub/drivingsdk",  "dest": "docker.io/ascendai/drivingsdk" },
+  { "src": "swr.cn-south-1.myhuaweicloud.com/ascendhub/drivingsdk",  "dest": "quay.io/ascend/drivingsdk" }
 ]
