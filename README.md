@@ -30,13 +30,16 @@
     │   ├── sglang-downloaded-models.ini  # SGLANG 模型同步配置
     │   ├── sglang-downloaded-datasets.ini # SGLANG 数据集同步配置
     │   ├── hk001-models.json             # HK001 模型同步配置 (JSON)
-    │   └── hk001-datasets.json           # HK001 数据集同步配置 (JSON)
+    │   ├── hk001-datasets.json           # HK001 数据集同步配置 (JSON)
+    │   ├── image-sync.json               # 镜像同步配置
+    │   └── readme-sync.json              # README 同步配置
     ├── vllm-sync-models-datasets.yml     # VLLM 同步工作流
     ├── sglang-innersourse-sync-models-datasets.yml  # SGLANG 内源同步
     ├── sglang-opensourse-sync-models-datasets.yml   # SGLANG 开源同步
     ├── hk001-sync-models.yml             # HK001 模型同步工作流
     ├── hk001-sync-datasets.yml           # HK001 数据集同步工作流
     ├── sync-images.yml                   # 镜像同步工作流
+    ├── sync-readmes.yml                  # README 同步工作流
     └── test.yml                          # 测试工作流
 ```
 
@@ -101,6 +104,25 @@ model_name_2
 ]
 ```
 
+### 同步 README 到镜像仓库
+
+编辑 [readme-sync.json](.github/workflows/config/readme-sync.json)，每条记录声明从哪里取 README、推到哪个仓库：
+
+```json
+[
+  { "src": "https://raw.gitcode.com/user/project/raw/main/docker/README.md",
+    "dest": "docker.io/ascendai/slime-ascend" },
+  { "src": "https://raw.gitcode.com/user/project/raw/main/docker/README.md",
+    "dest": "quay.io/ascend/slime-ascend" }
+]
+```
+
+- `src` 为可公开访问的 README 原文 URL
+- `dest` 目前支持 `docker.io/*` 和 `quay.io/*`
+- 工作流使用 [docker-pushrm](https://github.com/christian-korneck/docker-pushrm) 调用各 registry 的描述更新 API，内容未变化（sha256 相同）则跳过
+- 触发方式：每日 06:17 UTC 定时 + `workflow_dispatch` 手动触发 + `readme-sync.json` 变更时自动触发
+- Quay API token：默认复用 `QUAY_ASCEND_PWD`；若该机器人账号无 repo admin 权限，需在 secrets 中新增 `QUAY_API_TOKEN`（Quay OAuth token，权限至少 `Read/Write to any accessible repositories`），工作流会优先使用它
+
 ### 2. 手动触发同步
 - 在 GitHub Actions 页面选择对应的工作流，点击 "Run workflow" 即可手动触发同步。
 - 也可以通过向 `main` 分支推送配置文件变更来触发同步。
@@ -120,6 +142,7 @@ model_name_2
 - [镜像地址指引（按项目分类）](IMAGE_SYNC_GUIDE.md) – 详细列出各项目镜像的存放地址，方便快速查找。
 
 ## 更新记录
+- 2026-05-13: 新增 README 同步工作流（sync-readmes.yml），通过 docker-pushrm 将 README 推送到 Docker Hub / Quay.io 的对应仓库。
 - 2026-04-20: 镜像同步改为配置驱动（image-sync.json），支持任意源/目标 registry，同步频率改为每小时一次，新增 digest 比对跳过机制。
 - 2025-12-08: 更新 README，新增 HK001 同步说明，补充镜像同步流向。
 - 2025-11-15: 初始版本，包含 VLLM 和 SGLANG 同步。
