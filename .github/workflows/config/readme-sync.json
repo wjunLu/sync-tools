@@ -1,1 +1,6 @@
-[]
+[
+  {
+    "src": "https://raw.gitcode.com/Ascend/RAGSDK/raw/master/docker/OVERVIEW.md",
+    "dest": "quay.io/ascend/ragsdk"
+  }
+]
