@@ -64,13 +64,35 @@ jobs:
 
           total=0 synced=0 skipped=0 failed=0
 
+          # raw.gitcode.com 的 CDN 对 GHA runner IP 段返回 418 反爬，
+          # 但 git 协议未拦截，将 raw URL 还原为仓库地址用 git 拉取。
+          download_readme() {
+            local url="$1" out="$2"
+            if [[ "$url" =~ ^https://raw\.gitcode\.com/([^/]+)/([^/]+)/raw/([^/]+)/(.+)$ ]]; then
+              local owner="${BASH_REMATCH[1]}" repo="${BASH_REMATCH[2]}"
+              local branch="${BASH_REMATCH[3]}" path="${BASH_REMATCH[4]}"
+              local tmp; tmp=$(mktemp -d)
+              if git clone --quiet --depth=1 --filter=blob:none --sparse \
+                   --branch "$branch" "https://gitcode.com/${owner}/${repo}.git" "$tmp" \
+                 && git -C "$tmp" sparse-checkout set "$path" >/dev/null \
+                 && [ -f "$tmp/$path" ]; then
+                cp "$tmp/$path" "$out"
+                rm -rf "$tmp"
+                return 0
+              fi
+              rm -rf "$tmp"
+              return 1
+            fi
+            curl -fsSL --max-time 60 --retry 3 --retry-delay 5 "$url" -o "$out"
+          }
+
           while IFS=$'\t' read -r src dest; do
             total=$((total + 1))
             echo ""
             echo "=== [$total/$count] $src -> $dest ==="
 
             readme_file="$WORK_DIR/readme-${total}.md"
-            if ! curl -fsSL --max-time 60 --retry 3 --retry-delay 5 "$src" -o "$readme_file"; then
+            if ! download_readme "$src" "$readme_file"; then
               echo "❌ download failed: $src"
               failed=$((failed + 1))
               continue
