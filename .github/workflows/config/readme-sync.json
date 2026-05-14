@@ -2,5 +2,9 @@
   {
     "src": "https://raw.gitcode.com/Ascend/RAGSDK/raw/master/docker/OVERVIEW.md",
     "dest": "quay.io/ascend/ragsdk"
+  },
+  {   
+    "src": "https://raw.githubusercontent.com/Goalina/sglang/main/placeholder/OVERVIEW.md",
+    "dest": "docker.io/ascendai/vllm-ascend"
   }
 ]
