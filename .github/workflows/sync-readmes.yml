@@ -46,7 +46,7 @@ jobs:
           DOCKER_PASS__DOCKER_IO: ${{ secrets.DOCKERHUB_PWD }}
           DOCKER_USER__QUAY_IO: ${{ vars.QUAY_ASCEND_USER }}
           DOCKER_PASS__QUAY_IO: ${{ secrets.QUAY_ASCEND_PWD }}
-          APIKEY__QUAY_IO: ${{ secrets.QUAY_API_TOKEN != '' && secrets.QUAY_API_TOKEN || secrets.QUAY_ASCEND_PWD }}
+          APIKEY__QUAY_IO: ${{ secrets.QUAY_API_KEY }}
         run: |
           set -euo pipefail
 
@@ -98,6 +98,24 @@ jobs:
               continue
             fi
 
+            case "$dest" in
+              docker.io/*) provider_args=() ;;
+              quay.io/*)
+                provider_args=(--provider quay)
+                # quay's Information tab strips inline HTML and the deployed
+                # react-markdown build does not render GFM pipe tables, so
+                # rewrite tables into bullet lists before upload.
+                adapted="$WORK_DIR/readme-${total}.quay.md"
+                python3 .github/scripts/quay_md_adapt.py "$readme_file" "$adapted"
+                readme_file="$adapted"
+                ;;
+              *)
+                echo "❌ unsupported registry: $dest"
+                failed=$((failed + 1))
+                continue
+                ;;
+            esac
+
             new_hash=$(sha256sum "$readme_file" | awk '{print $1}')
             cache_key=$(echo "$dest" | tr '/:' '__')
             cache_file="$CACHE_DIR/${cache_key}.hash"
@@ -106,16 +124,6 @@ jobs:
               skipped=$((skipped + 1))
               continue
             fi
-
-            case "$dest" in
-              docker.io/*) provider_args=() ;;
-              quay.io/*)   provider_args=(--provider quay) ;;
-              *)
-                echo "❌ unsupported registry: $dest"
-                failed=$((failed + 1))
-                continue
-                ;;
-            esac
 
             set +e
             docker-pushrm "${provider_args[@]}" --file "$readme_file" "$dest"
